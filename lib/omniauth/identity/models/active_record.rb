@@ -5,10 +5,10 @@ module OmniAuth
     module Models
       class ActiveRecord < ::ActiveRecord::Base
         include OmniAuth::Identity::Model
-        include OmniAuth::Identity::SecurePassword
+        include OmniAuth::Identity::InsecurePassword
 
         self.abstract_class = true
-        has_secure_password
+        has_insecure_password
 
         def self.auth_key=(key)
           super

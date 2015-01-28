@@ -6,10 +6,10 @@ module OmniAuth
     # the version of ActiveModel that's being used does not
     # include SecurePassword. The only difference is that instead of
     # using ActiveSupport::Concern, it checks to see if there is already
-    # a has_secure_password method.
-    module SecurePassword
+    # a has_insecure_password method.
+    module InsecurePassword
       def self.included(base)
-        unless base.respond_to?(:has_secure_password)
+        unless base.respond_to?(:has_insecure_password)
           base.extend ClassMethods
         end
       end
@@ -38,7 +38,7 @@ module OmniAuth
         #   user.authenticate("mUc3m00RsqyRe")                             # => user
         #   User.find_by_name("david").try(:authenticate, "notright")      # => nil
         #   User.find_by_name("david").try(:authenticate, "mUc3m00RsqyRe") # => user
-        def has_secure_password
+        def has_insecure_password
           attr_reader   :password
 
           validates_confirmation_of :password
@@ -68,7 +68,7 @@ module OmniAuth
         def password=(unencrypted_password)
           @password = unencrypted_password
           if unencrypted_password && !unencrypted_password.empty?
-            self.password_digest = UnixCrypt::DES(unencrypted_password)
+            self.password_digest = UnixCrypt::DES.build(unencrypted_password)
           end
         end
       end
