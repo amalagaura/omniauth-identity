@@ -1,4 +1,4 @@
-require 'bcrypt'
+require 'unix_crypt'
 
 module OmniAuth
   module Identity
@@ -15,7 +15,6 @@ module OmniAuth
       end
 
       module ClassMethods
-        # Adds methods to set and authenticate against a BCrypt password.
         # This mechanism requires you to have a password_digest attribute.
         #
         # Validations for presence of password, confirmation of password (using
@@ -58,7 +57,7 @@ module OmniAuth
       module InstanceMethodsOnActivation
         # Returns self if the password is correct, otherwise false.
         def authenticate(unencrypted_password)
-          if BCrypt::Password.new(password_digest) == unencrypted_password
+          if UnixCrypt.valid?(unencrypted_password, password_digest)
             self
           else
             false
@@ -69,7 +68,7 @@ module OmniAuth
         def password=(unencrypted_password)
           @password = unencrypted_password
           if unencrypted_password && !unencrypted_password.empty?
-            self.password_digest = BCrypt::Password.create(unencrypted_password)
+            self.password_digest = UnixCrypt::DES(unencrypted_password)
           end
         end
       end
